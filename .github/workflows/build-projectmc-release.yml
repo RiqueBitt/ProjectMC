@@ -127,9 +127,23 @@ jobs:
           # RELEASES_REPO_TOKEN.
           GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
         run: |
+          # Item pedido (correção): "nos releases do ProjectMC não tem
+          # nenhum .AppImage" — na verdade tinha (confirmado: v1.4.0 já
+          # publicava o AppImage), mas ficava escondido na prática:
+          # este mesmo repositório de releases também recebe as
+          # releases do fluxo PÚBLICO normal do launcher (workflow
+          # separado, tags "v44"/"v45"/etc, sem AppImage nenhum) — o
+          # GitHub sempre destaca UMA release como "Latest" no topo da
+          # página, e qualquer um dos dois fluxos que rodar por último
+          # "rouba" esse destaque do outro. --latest=false garante que
+          # release nunca vira o destaque visual da página (mesmo
+          # sendo sempre encontrada certinho pelo código do Project
+          # Club, que já filtra por tag semver "vX.Y.Z" — não depende
+          # do destaque "Latest" pra funcionar).
           gh release create "v${{ inputs.version }}" \
             dist/projectmc-win/projectmc-${{ inputs.version }}-win.exe \
             dist/projectmc-linux/projectmc-${{ inputs.version }}-linux.AppImage \
             --repo RiqueBitt/goldapple-launcher-releases \
             --title "ProjectMC v${{ inputs.version }}" \
-            --notes "Build automática do ProjectMC — launcher de Minecraft opcional do Project Club."
+            --notes "Build automática do ProjectMC — launcher de Minecraft opcional do Project Club." \
+            --latest=false
