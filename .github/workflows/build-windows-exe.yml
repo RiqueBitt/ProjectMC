@@ -91,36 +91,16 @@ jobs:
             xmcl-electron-app/build/output/latest*.yml
           if-no-files-found: error
 
-      # Publica como GitHub Release NO REPOSITORIO DE RELEASES (publico),
-      # nao neste repo (que e privado — o codigo-fonte fica so aqui). O
-      # electron-updater roda na maquina do usuario sem login nenhum, entao
-      # ele so consegue checar/baixar update de um repo publico. Por isso
-      # `repository:` aponta pro repo separado e `token:` usa um Personal
-      # Access Token proprio (RELEASES_REPO_TOKEN), ja que o
-      # secrets.GITHUB_TOKEN automatico so tem permissao dentro DESTE repo.
-      #
-      # Configuracao necessaria (uma vez so):
-      #   1. Crie o repo publico "goldapple-launcher-releases" (vazio, sem
-      #      codigo) em github.com/new.
-      #   2. Gere um token em Settings > Developer settings > Fine-grained
-      #      tokens, com acesso SO a esse repo e permissao "Contents: Read
-      #      and write".
-      #   3. Adicione esse token como secret neste repo (o privado):
-      #      Settings > Secrets and variables > Actions > New repository
-      #      secret > nome RELEASES_REPO_TOKEN.
-      #
-      # É o que faz o botão "Baixar para Windows" do site funcionar,
-      # já que ele aponta para /releases/latest desse repo publico.
+      # Publica como GitHub Release neste mesmo repositório (público), com o
+      # GITHUB_TOKEN automático — o electron-updater do launcher procura as
+      # atualizações aqui (veja o bloco `publish` em electron-builder.config.ts).
+      # Antes as releases iam para o repositório separado
+      # goldapple-launcher-releases, que agora está arquivado.
       # fail_on_unmatched_files garante que, se nada for gerado, o
       # workflow falhe de forma visível em vez de criar uma release vazia.
-      - name: Publicar GitHub Release (repo de releases)
+      - name: Publicar GitHub Release (neste repositório)
         uses: softprops/action-gh-release@v2
         with:
-          repository: RiqueBitt/goldapple-launcher-releases
-          # Token explicito (nao o secrets.GITHUB_TOKEN automatico) porque
-          # esse token so vale dentro deste repo — pra publicar em outro repo
-          # precisa de um PAT com permissao la. Veja o comentario acima.
-          token: ${{ secrets.RELEASES_REPO_TOKEN }}
           tag_name: v${{ github.run_number }}
           name: ProjectMC build ${{ github.run_number }}
           # Descricao curta que aparece no popup de atualizacao do launcher:
