@@ -8,7 +8,8 @@ const manifest: InstalledAppManifest = {
   name: 'ProjectMC',
   description: 'The default launcher UI',
   url: HAS_DEV_SERVER ? defaultUrl : `http://${HOST}/index.html`,
-  backgroundColor: '0x424242',
+  // Project Club: cor de fundo da janela (#131417) enquanto a interface carrega.
+  backgroundColor: '#131417',
   minWidth: 800,
   minHeight: 400,
   vibrancy: false,

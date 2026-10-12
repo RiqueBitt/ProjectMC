@@ -73,16 +73,30 @@ export const vuetify = createVuetify({
       system: {},
       dark: {
         dark: true,
+        // Visual Project Club (paleta escura compartilhada pelos apps do
+        // ecossistema). O destaque deste app é o verde-limão #A3E635, com
+        // texto escuro (#0E0F12) por cima para dar contraste. A primária e o
+        // destaque continuam sendo sobrescritos em tempo de execução pelas
+        // cores escolhidas pelo usuário em Configurações > Aparência
+        // (composables/theme.ts) — aqui ficam só os valores de partida.
         colors: {
-          // Item pedido: "troque a cor laranja... para um tom azul" —
-          // mesma cor de marca do Project Club (--brand no CSS do site,
-          // #4C9FFF) pra manter os dois apps do mesmo ecossistema
-          // visualmente consistentes, em vez de escolher um azul
-          // qualquer sem relação com o resto.
-          // Item pedido: "Primária Color do launcher de minecraft em R
-          // 54 G 98 B 164 A 1" — #3662A4 exato.
-          primary: '#3662A4',
-          accent: '#7CBBFF',
+          primary: '#A3E635',
+          'on-primary': '#0E0F12',
+          accent: '#BEF264',
+          'on-accent': '#0E0F12',
+          secondary: '#343742',
+          'on-secondary': '#F0F5FA',
+          background: '#131417',
+          'on-background': '#F0F5FA',
+          surface: '#1E1F24',
+          'on-surface': '#F0F5FA',
+          'surface-bright': '#2E3038',
+          'surface-light': '#343742',
+        },
+        variables: {
+          // Bordas e divisores na cor de borda da paleta (#2E3038)
+          'border-color': '#2E3038',
+          'border-opacity': 1,
         },
       },
     },

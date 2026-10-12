@@ -5,6 +5,7 @@ import { app, contentTracing, dialog, Menu, Tray, nativeTheme, nativeImage, Menu
 import { join } from 'path'
 import { ControllerPlugin } from './plugin'
 import { kSettings } from '@xmcl/runtime/settings'
+import { PROJECT_CLUB_UPDATE_NOTE } from '@/utils/updater'
 
 export const trayPlugin: ControllerPlugin = function (this: ElectronController) {
   const { t } = this.i18n
@@ -39,7 +40,6 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
 
   //   }
   // })
-  let checkUpdate: (() => void) | undefined
   const createMenu = () => {
     const app = this.app
     const onBrowseAppClicked = () => {
@@ -56,13 +56,12 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
       // shell.openPath(this.app.logManager.getLogRoot())
     }
     const options: MenuItemConstructorOptions[] = [
+      // Project Club: o launcher não procura atualizações sozinho — no lugar
+      // de "Procurar atualização" fica só um aviso (item desativado).
       {
         type: 'normal',
-        label: t('checkUpdate'),
-        click: () => {
-          checkUpdate?.()
-        },
-        enabled: !!checkUpdate,
+        label: PROJECT_CLUB_UPDATE_NOTE,
+        enabled: false,
       },
       {
         label: t('multiplayer'),
@@ -150,10 +149,6 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
   }
 
   this.app.waitEngineReady().then(async () => {
-    this.app.registry.get(BaseService).then(service => {
-      checkUpdate = () => service.checkUpdate()
-      tray.setContextMenu(createMenu())
-    })
     this.app.registry.get(kSettings).then(state => {
       state.subscribe('config', () => {
         tray.setToolTip(t('title'))

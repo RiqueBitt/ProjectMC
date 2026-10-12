@@ -4,76 +4,40 @@
     :title="t('setting.update')"
     icon="rocket_launch"
   >
-    <SettingItem>
+    <SettingItem data-testid="settings-update-note">
       <template #preaction>
-        <v-btn
-          data-testid="settings-check-update"
-          v-shared-tooltip="() => t('setting.checkUpdate')"
-          icon
-          variant="text"
-          :loading="checkingUpdate"
-          @click="checkUpdate"
-        >
-          <v-icon>refresh</v-icon>
-        </v-btn>
+        <v-icon color="primary">
+          apps
+        </v-icon>
       </template>
-      
+
       <template #title>
-        {{ t("setting.latestVersion") }}
+        v{{ version }}
       </template>
 
       <template #subtitle>
-        <span :class="{'success--text': !hasNewUpdate, 'primary--text': hasNewUpdate}">
-          v{{ version }}
-          {{ hasNewUpdate && updateInfo ? `-> ${updateInfo.name}` : "" }}
-        </span>
-        <v-chip
-          v-if="hasNewUpdate"
-          size="x-small"
-          color="primary"
-          class="ml-2"
-          label
-        >
-          NEW
-        </v-chip>
-      </template>
-      
-      <template #action>
-        <v-btn
-          :loading="checkingUpdate || installing"
-          :disabled="updateStatus === 'none'"
-          :color="updateStatus !== 'none' ? 'primary' : ''"
-          :outlined="updateStatus === 'none'"
-          @click="showUpdateInfo()"
-         size="small">
-          <v-icon start size="small" v-if="updateStatus !== 'none'">system_update</v-icon>
-          {{
-            updateStatus === "none"
-              ? t("launcherUpdate.alreadyLatest")
-              : updateStatus === "pending"
-                ? t("launcherUpdate.updateToThisVersion")
-                : t("launcherUpdate.installAndQuit")
-          }}
-        </v-btn>
+        {{ PROJECT_CLUB_UPDATE_NOTE }}
       </template>
     </SettingItem>
   </SettingCard>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { useDialog } from '../composables/dialog'
 import { kUpdateSettings } from '../composables/setting'
 import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 
-const { show: showUpdateInfo } = useDialog('update-info')
+// Project Club: o ProjectMC não procura/baixa/instala atualizações por conta
+// própria — ele é atualizado pela aba Apps do Project Club. Por isso os botões
+// "procurar atualização" e "atualizar/instalar" deram lugar a um aviso curto,
+// mantendo só a versão instalada à mostra.
+// Mesmo texto usado no menu da bandeja (xmcl-electron-app/main/utils/updater.ts).
+const PROJECT_CLUB_UPDATE_NOTE = 'O ProjectMC é atualizado pela aba Apps do Project Club.'
+
 const disableUpdate = false // state.env !== 'raw'
-const { updateInfo, installing, updateStatus, checkUpdate, checkingUpdate, version } = injection(kUpdateSettings)
-const hasNewUpdate = computed(() => updateStatus.value !== 'none' && !!updateInfo.value?.newUpdate)
+const { version } = injection(kUpdateSettings)
 const { t } = useI18n()
 
 </script>

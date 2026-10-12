@@ -144,7 +144,7 @@ import AppMoodBackground from '@/components/AppMoodBackground.vue'
 import AppMoodSurface from '@/components/AppMoodSurface.vue'
 import { useService } from '@/composables'
 import { kSettingsState } from '@/composables/setting'
-import { BackgroundType, kTheme } from '@/composables/theme'
+import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, Drive, InvalidDirectoryErrorCode } from '@xmcl/runtime-api'
 import SetupAccount from './SetupAccount.vue'
@@ -154,7 +154,7 @@ import SetupFooter from './SetupFooter.vue'
 import SetLocale from './SetupLocale.vue'
 
 const emit = defineEmits(['ready'])
-const { validateDataDictionary, getEnvironment } = useService(BaseServiceKey)
+const { validateDataDictionary } = useService(BaseServiceKey)
 
 const next = () => {
   data.step = Number(data.step) + 1
@@ -181,7 +181,9 @@ const data = reactive({
   defaultPath: '',
   loading: false,
   drives: [] as Drive[],
-  theme: 'system',
+  // Project Club: o assistente já começa no modo escuro (visual padrão do
+  // ecossistema); o usuário ainda pode escolher claro/sistema aqui.
+  theme: 'dark',
 })
 provide('setup', data)
 bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }) => {
@@ -211,7 +213,7 @@ watch(() => data.path, (newPath) => {
   })
 })
 
-const { isDark, currentTheme, saveCurrentTheme } = injection(kTheme)
+const { currentTheme, saveCurrentTheme } = injection(kTheme)
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
   if (theme === 'system') {
@@ -233,18 +235,11 @@ const { state } = injection(kSettingsState)
 
 async function persistInitialTheme() {
   // The wizard mutates `currentTheme` in-place when it picks defaults
-  // (dark mode + Halo background on GPU machines). `useTheme()` does not
-  // auto-persist those mutations, so we must explicitly save here —
-  // otherwise the first launch shows Halo but `theme.json` is never
-  // written and the next launch falls back to `BackgroundType.NONE`.
-  try {
-    const e = await getEnvironment()
-    if (e.gpu && isDark.value) {
-      currentTheme.value.backgroundType = BackgroundType.HALO
-    }
-  } catch (err) {
-    console.error('Failed to detect environment during setup', err)
-  }
+  // (dark mode). `useTheme()` does not auto-persist those mutations, so we
+  // must explicitly save here — otherwise `theme.json` is never written.
+  // Project Club: o fundo animado "Halo" não é mais ligado automaticamente
+  // em máquinas com GPU — o visual padrão é o fundo liso da paleta
+  // (#131417). O Halo continua disponível em Configurações > Aparência.
   try {
     await saveCurrentTheme()
   } catch (err) {

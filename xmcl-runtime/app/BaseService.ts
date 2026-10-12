@@ -218,10 +218,17 @@ export class BaseService extends AbstractService implements IBaseService {
     try {
       const settings = await this.getSettings()
       this.log('Check update')
+      // Project Club: o updater não acessa a rede e sempre responde "sem
+      // atualização" (o ProjectMC é atualizado pela aba Apps do Project
+      // Club). Também zera qualquer estado 'pending'/'ready' que tenha
+      // ficado salvo de versões antigas, para não exibir aviso/diálogo de
+      // atualização que levaria a um download que não existe mais.
       const info = await this.app.updater.checkUpdateTask()
       settings.updateInfoSet(info)
       if (info.newUpdate) {
         settings.updateStatusSet('pending')
+      } else {
+        settings.updateStatusSet('none')
       }
     } catch (e) {
       if (e instanceof Error && e.name === 'Error') {

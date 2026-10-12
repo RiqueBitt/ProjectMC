@@ -80,33 +80,43 @@ export interface UIThemeDataV1 {
 
 export function getDefaultTheme(): UIThemeDataV1 {
   return {
-    dark: 'system',
+    // Visual Project Club como padrão: modo escuro ligado de fábrica (antes
+    // seguia o sistema). Quem já tem tema salvo continua com o que escolheu —
+    // isto só vale para instalações novas e para o botão "restaurar padrão".
+    dark: true,
     backgroundMusic: [],
     backgroundMusicPlayOrder: 'sequential',
-    // Item pedido: "troque a cor laranja... para um tom azul" — mesma cor
-    // de marca do Project Club (--brand no CSS do site, #4C9FFF) pra
-    // manter os dois apps do mesmo ecossistema visualmente consistentes.
+    // Paleta compartilhada por todos os apps do Project Club:
+    //   fundos  #1E1F24 (cards/painéis) · #17181C (barra lateral)
+    //           #131417 (fundo da janela) · #0E0F12 (mais profundo)
+    //   bordas  #2E3038 / #3A3D47 · controles #343742
+    //   texto   #F0F5FA / #A9AEBB
+    // A cor de destaque DESTE app (ProjectMC) é o verde-limão #A3E635
+    // (mais claro #BEF264, mais escuro #65A30D). Texto sobre o destaque
+    // fica escuro (#0E0F12) — ver `pickOnColor` mais abaixo.
     colors: {
       lightAppBarColor: '#e0e0e0FF',
       lightSideBarColor: '#FFFFFFFF',
-      darkAppBarColor: '#111111FF',
-      darkSideBarColor: '#11111166',
-      darkPrimaryColor: '#3662A4',
-      darkBackground: '#000000FF',
+      darkAppBarColor: '#131417FF',
+      darkSideBarColor: '#17181CFF',
+      darkPrimaryColor: '#A3E635',
+      darkBackground: '#131417FF',
       darkInfoColor: '#2196F3',
       darkErrorColor: '#FF5252',
       darkWarningColor: '#FB8C00',
 
       darkSuccessColor: '#4CAF50',
-      darkAccentColor: '#7CBBFF',
-      darkCardColor: '#0c0c0ccc',
-      lightPrimaryColor: '#3662A4',
+      darkAccentColor: '#BEF264',
+      darkCardColor: '#1E1F24FF',
+      // No tema claro o limão puro tem pouco contraste com o branco, então
+      // a primária usa o tom escuro da mesma família.
+      lightPrimaryColor: '#65A30D',
       lightBackground: '#FFFFFF',
       lightInfoColor: '#2196F3',
       lightErrorColor: '#FF5252',
       lightWarningColor: '#FB8C00',
       lightSuccessColor: '#4CAF50',
-      lightAccentColor: '#7CBBFF',
+      lightAccentColor: '#A3E635',
       lightCardColor: '#e0e0e080' },
     backgroundColorOverlay: true,
     backgroundVolume: 1,
@@ -301,6 +311,33 @@ export interface ThemeWritterOptions {
    * This keeps instance theme media separate from global theme media.
    */
   instancePath?: string
+}
+
+/**
+ * Project Club: escolhe a cor do texto que vai por cima de uma cor de fundo
+ * (ex.: texto de botão primário). Compara o contraste WCAG com o texto escuro
+ * da paleta (#0E0F12) e com o claro (#F0F5FA) e fica com o melhor — assim o
+ * limão padrão recebe texto escuro, mas se o usuário trocar a primária para
+ * uma cor escura o texto volta a ser claro automaticamente.
+ */
+export function pickOnColor(background: string): string {
+  const DARK_TEXT = '#0E0F12'
+  const LIGHT_TEXT = '#F0F5FA'
+  const luminance = (hex: string) => {
+    const h = hex.replace('#', '')
+    if (!/^[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(h)) return undefined
+    const channel = (i: number) => {
+      const c = parseInt(h.slice(i, i + 2), 16) / 255
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+    }
+    return 0.2126 * channel(0) + 0.7152 * channel(2) + 0.0722 * channel(4)
+  }
+  const bg = luminance(background)
+  if (bg === undefined) return LIGHT_TEXT
+  const contrast = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+  return contrast(bg, luminance(DARK_TEXT)!) >= contrast(bg, luminance(LIGHT_TEXT)!)
+    ? DARK_TEXT
+    : LIGHT_TEXT
 }
 
 function useIsDark(currentTheme: Ref<UIThemeDataV1>) {
@@ -966,6 +1003,9 @@ export function useTheme(
     primaryColor,
     (newColor) => {
       framework.themes.value[framework.global.name.value].colors.primary = newColor
+      // Project Club: texto sobre a primária com contraste garantido
+      // (escuro #0E0F12 sobre o limão padrão).
+      ;(framework.themes.value[framework.global.name.value].colors as any)['on-primary'] = pickOnColor(newColor)
     },
     { immediate: true },
   )
@@ -973,6 +1013,7 @@ export function useTheme(
     accentColor,
     (newColor) => {
       ;(framework.themes.value[framework.global.name.value].colors as any).accent = newColor
+      ;(framework.themes.value[framework.global.name.value].colors as any)['on-accent'] = pickOnColor(newColor)
     },
     { immediate: true },
   )
@@ -1040,9 +1081,17 @@ export function useTheme(
     --color-error: ${errorColor.value};
     --color-success: ${successColor.value};
     --color-warning: ${warningColor.value};
-    --color-border: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
+    --color-border: ${isDark.value ? '#2E3038' : 'hsla(0, 0%, 100%, .12)'};
     --color-highlight-bg: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
-    --color-secondary-text: ${isDark.value ? 'rgba(156, 163, 175, 1)' : 'rgba(75, 85, 99, 1)'};
+    --color-secondary-text: ${isDark.value ? '#A9AEBB' : 'rgba(75, 85, 99, 1)'};
+    --color-on-primary: ${pickOnColor(primaryColor.value)};
+    /* Paleta Project Club (fixa, usada pelos detalhes de acabamento abaixo) */
+    --pc-bg-deep: #0E0F12;
+    --pc-border: #2E3038;
+    --pc-border-2: #3A3D47;
+    --pc-control: #343742;
+    --pc-text: #F0F5FA;
+    --pc-text-2: #A9AEBB;
     --color-sidebar-bg: ${sideBarColor.value};
     --color-appbar-bg: ${appBarColor.value};
     --color-card-bg: ${cardColor.value};
@@ -1063,6 +1112,24 @@ export function useTheme(
   .theme--light.v-application{
     background-color: transparent;
   }
+
+  /* Acabamento Project Club no modo escuro: seleção de texto e barras de
+     rolagem nas cores da paleta, sem mexer nas cores que o usuário escolheu. */
+  ${isDark.value
+    ? `
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+    color: var(--pc-text);
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--pc-control);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--pc-border-2);
+  }
+  `
+    : ''}
   `,
     ),
   )
