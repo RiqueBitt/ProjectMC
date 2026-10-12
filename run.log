@@ -1,0 +1,37 @@
+
+
+Openbox
+
+ProjectMC
+
+captura 1: idioma
+captura 2: aparencia
+captura 3: pasta-de-dados
+captura 4: conta
+captura 5: apos-assistente
+captura 6: inicio
+captura 7: menu-120
+captura 8: menu-180
+captura 9: menu-240
+captura 10: menu-300
+captura 11: menu-360
+captura 12: menu-420
+captura 13: menu-480
+total 2340
+drwxr-xr-x  2 runner runner   4096 Oct 12 05:40 .
+drwxr-xr-x 18 runner runner   4096 Oct 12 05:39 ..
+-rw-r--r--  1 runner runner 386893 Oct 12 05:40 01-idioma.png
+-rw-r--r--  1 runner runner 301128 Oct 12 05:40 02-aparencia.png
+-rw-r--r--  1 runner runner 225055 Oct 12 05:40 03-pasta-de-dados.png
+-rw-r--r--  1 runner runner 277961 Oct 12 05:40 04-conta.png
+-rw-r--r--  1 runner runner  50107 Oct 12 05:40 05-apos-assistente.png
+-rw-r--r--  1 runner runner  69937 Oct 12 05:40 06-inicio.png
+-rw-r--r--  1 runner runner 201684 Oct 12 05:40 07-menu-120.png
+-rw-r--r--  1 runner runner 299338 Oct 12 05:40 08-menu-180.png
+-rw-r--r--  1 runner runner  54127 Oct 12 05:40 09-menu-240.png
+-rw-r--r--  1 runner runner 121772 Oct 12 05:40 10-menu-300.png
+-rw-r--r--  1 runner runner 121680 Oct 12 05:40 11-menu-360.png
+-rw-r--r--  1 runner runner 121680 Oct 12 05:40 12-menu-420.png
+-rw-r--r--  1 runner runner 121680 Oct 12 05:40 13-menu-480.png
+-rw-r--r--  1 runner runner   2902 Oct 12 05:40 app.log
+-rw-r--r--  1 runner runner    293 Oct 12 05:40 run.log
