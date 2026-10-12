@@ -283,15 +283,12 @@ async function downloadFullUpdate(
   await appUpdater.downloadUpdate(cancellationToken)
 }
 
-// ProjectMC publishes releases to this GitHub repo (see the
-// `publish` block in xmcl-electron-app/build/electron-builder.config.ts —
-// keep these two in sync if the repo ever moves). This is deliberately a
-// SEPARATE public repo from the source code (which is private): GitHub
-// releases inherit the visibility of the repo they live in, and
-// electron-updater on a user's machine has no credentials, so the release
-// assets have to live somewhere public even though the code doesn't.
+// ProjectMC publica as releases no próprio repositório do código
+// (RiqueBitt/ProjectMC, público) — veja o bloco `publish` em
+// xmcl-electron-app/build/electron-builder.config.ts; mantenha os dois em
+// sincronia. (Antes era o repositório separado goldapple-launcher-releases.)
 const GITHUB_OWNER = 'RiqueBitt'
-const GITHUB_REPO = 'goldapple-launcher-releases'
+const GITHUB_REPO = 'ProjectMC'
 
 /**
  * electron-updater decides "there is an update" purely from `latest.yml`,

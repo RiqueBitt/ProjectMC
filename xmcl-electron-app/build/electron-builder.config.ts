@@ -17,18 +17,14 @@ export const config = {
     schemes: ['projectmc'],
   },
   // assign publish for auto-updater
-  // O codigo-fonte (este repositorio) e privado. O electron-updater precisa
-  // de um lugar PUBLICO pra checar/baixar update sem autenticacao, entao os
-  // releases (.exe/.yml) sao publicados num repositorio separado
-  // (goldapple-launcher-releases) que so serve pra isso — sem codigo nenhum
-  // nele. Veja .github/workflows/build-windows-exe.yml pra ver como o build
-  // publica la, e xmcl-electron-app/main/utils/updater.ts (GITHUB_OWNER /
-  // GITHUB_REPO) que confirma se o instalador ja terminou de subir antes de
-  // avisar o usuario.
+  // As releases (.exe/.yml/.AppImage) ficam no próprio repositório do código
+  // (RiqueBitt/ProjectMC, público). Antes era o repositório separado
+  // "goldapple-launcher-releases", hoje arquivado. Mantenha em sincronia com
+  // GITHUB_OWNER/GITHUB_REPO em xmcl-electron-app/main/utils/updater.ts.
   publish: [{
     provider: 'github',
     owner: 'RiqueBitt',
-    repo: 'goldapple-launcher-releases',
+    repo: 'ProjectMC',
   }],
   files: [{
     from: 'dist',
